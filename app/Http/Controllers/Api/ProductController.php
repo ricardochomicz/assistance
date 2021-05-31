@@ -79,6 +79,7 @@ class ProductController extends Controller
             return redirect()->back();
         }
         $data = $request->all();
+        $data['price'] = str_replace(',','.', str_replace('.','', $request->price));
 
         $company = auth()->user()->company;
         if ($request->hasFile('image') && $request->image->isValid()) {
