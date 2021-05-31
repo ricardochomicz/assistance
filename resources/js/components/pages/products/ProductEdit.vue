@@ -181,7 +181,6 @@ export default {
             money: {
                 decimal: ",",
                 thousands: ".",
-                prefix: "R$ ",
                 precision: 2,
                 masked: false
             }

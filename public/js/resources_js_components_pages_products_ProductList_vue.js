@@ -208,7 +208,6 @@ var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
       money: {
         decimal: ",",
         thousands: ".",
-        prefix: "R$ ",
         precision: 2,
         masked: false
       }
