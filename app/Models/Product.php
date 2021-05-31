@@ -21,5 +21,10 @@ class Product extends Model
         return $this->attributes['name'] = mb_strtoupper($value);
     }
 
+    // public function setPriceAttribute($value)
+    // {
+    //     return $this->attributes['price'] = str_replace(',', '.', str_replace('.', '', $value));
+    // }
+
 
 }

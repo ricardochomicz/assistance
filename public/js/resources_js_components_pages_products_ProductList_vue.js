@@ -190,6 +190,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -864,6 +865,11 @@ var render = function() {
                               ])
                             : _vm._e()
                         ]
+                      ),
+                      _vm._v(
+                        "\n                            " +
+                          _vm._s(_vm.product.price) +
+                          "\n                        "
                       )
                     ],
                     1

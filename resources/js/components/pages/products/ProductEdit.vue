@@ -85,6 +85,7 @@
                                         >{{ errors.price[0] }}</small
                                     >
                                 </div>
+                                {{ product.price }}
                             </div>
 
                             <div class="form-group">
