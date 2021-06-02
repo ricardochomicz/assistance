@@ -24,7 +24,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = $this->repository->orderBy('name', 'asc')->paginate();
+        $products = $this->repository->with('category')->orderBy('active', 'desc')->orderBy('name', 'asc')->paginate();
         return ProductResource::collection($products);
     }
 
@@ -54,12 +54,8 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        if (!$product = $this->repository->find($id)) {
-            return redirect()->back();
-        }
-
         return new ProductResource($product);
     }
 

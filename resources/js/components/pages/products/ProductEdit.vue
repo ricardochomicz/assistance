@@ -85,7 +85,6 @@
                                         >{{ errors.price[0] }}</small
                                     >
                                 </div>
-                                {{ product.price }}
                             </div>
 
                             <div class="form-group">
@@ -98,6 +97,35 @@
                                 />
                             </div>
                             <div class="form-group">
+                                <label for="price">Categoria</label>
+                                <Select2
+                                    v-if="product.category"
+                                    :options="categories"
+                                    v-model="product.category.id"
+                                    name="category_id"
+                                    id="cat"
+                                >
+                                </Select2>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="switch"
+                                    v-b-tooltip.hover="
+                                        product.active == 1
+                                            ? 'Ativo'
+                                            : 'Inativo'
+                                    "
+                                >
+                                    <input
+                                        type="checkbox"
+                                        name="active"
+                                        v-bind:value="product.active"
+                                        v-model="product.active"
+                                    />
+                                    <div class="slider round"></div>
+                                </label>
+                            </div>
+                            <div class="form-group">
                                 <input
                                     type="file"
                                     name="image"
@@ -106,22 +134,6 @@
                                 />
                             </div>
 
-                            <div class="form-group">
-                                <div class="form-inline">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        v-model="product.active"
-                                        name="active"
-                                        id="flexCheckDefault"
-                                    />
-                                    <b>{{
-                                        product.active == 1
-                                            ? "Ativo"
-                                            : "Inativo"
-                                    }}</b>
-                                </div>
-                            </div>
                             <div class="form-group text-center">
                                 <img
                                     :src="'/storage/' + product.image"
@@ -175,8 +187,13 @@ import { Money } from "v-money";
 const URL = URI_BASE_API;
 export default {
     props: { product: { type: Object } },
+    created() {
+        this.getCategories();
+    },
     data() {
         return {
+            categories: [],
+            image: "",
             errors: [],
             message: false,
             money: {
@@ -210,6 +227,7 @@ export default {
             formData.append("name", this.product.name);
             formData.append("price", this.product.price);
             formData.append("description", this.product.description);
+            formData.append("category_id", this.product.category.id);
             formData.append("active", this.product.active ? 1 : 0);
             if (this.image) {
                 formData.append("image", this.image);
@@ -229,7 +247,6 @@ export default {
                 .then(response => {
                     console.log(response);
                     this.getProducts();
-                    this.$refs.form.reset();
                     this.$root.$emit("product", response);
                     this.close();
                     this.$toast.open({
@@ -240,14 +257,12 @@ export default {
                 })
                 .catch(e => {
                     this.errors = e.response.data.errors;
-                    if (this.errors.image) {
-                        this.$toast.open({
-                            message:
-                                "Arquivo inválido, você deve selecionar uma imagem!",
-                            type: "error",
-                            position: "bottom"
-                        });
-                    }
+                    this.$toast.open({
+                        message:
+                            "Arquivo inválido, você deve selecionar uma imagem!",
+                        type: "error",
+                        position: "bottom"
+                    });
                 });
         },
 
@@ -277,6 +292,15 @@ export default {
         },
         handleFileObject() {
             this.image = this.$refs.file.files[0];
+        },
+        getCategories() {
+            axios
+                .get(`${URL}/${RESOURCES.CATEGORIES}/getCategories`, {
+                    headers: { Authorization: "Bearer " + TOKEN }
+                })
+                .then(response => {
+                    this.categories = response.data;
+                });
         }
     }
 };

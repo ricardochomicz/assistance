@@ -35,9 +35,12 @@ Route::group(['namespace' => 'App\Http\Controllers\Api', 'as' => 'api.'], functi
         Route::name('roles-search')->get('roles/search', 'RoleController@search');
         Route::resource('roles', 'RoleController', ['except' => ['create', 'edit']]);
         Route::name('categories-search')->get('categories/search', 'CategoryController@search');
+        Route::get('categories/getCategories', 'CategoryController@getCategoriesFromSelect2');
         Route::resource('categories', 'CategoryController', ['except' => ['create', 'edit']]);
         Route::name('products-search')->get('products/search', 'ProductController@search');
-        Route::resource('products', 'ProductController', ['except' => ['create', 'edit']]);    
+        Route::resource('products', 'ProductController', ['except' => ['create', 'edit']]);
+        Route::name('clients-search')->get('clients/search', 'ClientController@search');
+        Route::resource('clients', 'ClientController', ['except' => ['create', 'edit']]);    
 
         /**
          * Route Permission x Role

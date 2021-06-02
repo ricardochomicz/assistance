@@ -191,6 +191,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -202,8 +214,13 @@ var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
       type: Object
     }
   },
+  created: function created() {
+    this.getCategories();
+  },
   data: function data() {
     return {
+      categories: [],
+      image: "",
       errors: [],
       message: false,
       money: {
@@ -237,6 +254,7 @@ var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
       formData.append("name", this.product.name);
       formData.append("price", this.product.price);
       formData.append("description", this.product.description);
+      formData.append("category_id", this.product.category.id);
       formData.append("active", this.product.active ? 1 : 0);
 
       if (this.image) {
@@ -254,8 +272,6 @@ var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
 
         _this.getProducts();
 
-        _this.$refs.form.reset();
-
         _this.$root.$emit("product", response);
 
         _this.close();
@@ -268,13 +284,11 @@ var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
       })["catch"](function (e) {
         _this.errors = e.response.data.errors;
 
-        if (_this.errors.image) {
-          _this.$toast.open({
-            message: "Arquivo inválido, você deve selecionar uma imagem!",
-            type: "error",
-            position: "bottom"
-          });
-        }
+        _this.$toast.open({
+          message: "Arquivo inválido, você deve selecionar uma imagem!",
+          type: "error",
+          position: "bottom"
+        });
       });
     },
     close: function close() {
@@ -305,6 +319,17 @@ var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
     },
     handleFileObject: function handleFileObject() {
       this.image = this.$refs.file.files[0];
+    },
+    getCategories: function getCategories() {
+      var _this3 = this;
+
+      axios.get("".concat(URL, "/").concat(_config_api__WEBPACK_IMPORTED_MODULE_0__.RESOURCES.CATEGORIES, "/getCategories"), {
+        headers: {
+          Authorization: "Bearer " + _config_api__WEBPACK_IMPORTED_MODULE_0__.TOKEN
+        }
+      }).then(function (response) {
+        _this3.categories = response.data;
+      });
     }
   })
 });
@@ -333,6 +358,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
 //
 //
 //
@@ -865,11 +894,6 @@ var render = function() {
                               ])
                             : _vm._e()
                         ]
-                      ),
-                      _vm._v(
-                        "\n                            " +
-                          _vm._s(_vm.product.price) +
-                          "\n                        "
                       )
                     ],
                     1
@@ -907,72 +931,112 @@ var render = function() {
                     })
                   ]),
                   _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "form-group" },
+                    [
+                      _c("label", { attrs: { for: "price" } }, [
+                        _vm._v("Categoria")
+                      ]),
+                      _vm._v(" "),
+                      _vm.product.category
+                        ? _c("Select2", {
+                            attrs: {
+                              options: _vm.categories,
+                              name: "category_id",
+                              id: "cat"
+                            },
+                            model: {
+                              value: _vm.product.category.id,
+                              callback: function($$v) {
+                                _vm.$set(_vm.product.category, "id", $$v)
+                              },
+                              expression: "product.category.id"
+                            }
+                          })
+                        : _vm._e()
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c(
+                      "label",
+                      {
+                        directives: [
+                          {
+                            name: "b-tooltip",
+                            rawName: "v-b-tooltip.hover",
+                            value:
+                              _vm.product.active == 1 ? "Ativo" : "Inativo",
+                            expression:
+                              "\n                                    product.active == 1\n                                        ? 'Ativo'\n                                        : 'Inativo'\n                                ",
+                            modifiers: { hover: true }
+                          }
+                        ],
+                        staticClass: "switch"
+                      },
+                      [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.product.active,
+                              expression: "product.active"
+                            }
+                          ],
+                          attrs: { type: "checkbox", name: "active" },
+                          domProps: {
+                            value: _vm.product.active,
+                            checked: Array.isArray(_vm.product.active)
+                              ? _vm._i(_vm.product.active, _vm.product.active) >
+                                -1
+                              : _vm.product.active
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.product.active,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = _vm.product.active,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.product,
+                                      "active",
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.product,
+                                      "active",
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(_vm.product, "active", $$c)
+                              }
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "slider round" })
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
                   _c("div", { staticClass: "form-group" }, [
                     _c("input", {
                       ref: "file",
                       attrs: { type: "file", name: "image" },
                       on: { change: _vm.onChange }
                     })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("div", { staticClass: "form-inline" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.product.active,
-                            expression: "product.active"
-                          }
-                        ],
-                        staticClass: "form-check-input",
-                        attrs: {
-                          type: "checkbox",
-                          name: "active",
-                          id: "flexCheckDefault"
-                        },
-                        domProps: {
-                          checked: Array.isArray(_vm.product.active)
-                            ? _vm._i(_vm.product.active, null) > -1
-                            : _vm.product.active
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.product.active,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  _vm.$set(
-                                    _vm.product,
-                                    "active",
-                                    $$a.concat([$$v])
-                                  )
-                              } else {
-                                $$i > -1 &&
-                                  _vm.$set(
-                                    _vm.product,
-                                    "active",
-                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                                  )
-                              }
-                            } else {
-                              _vm.$set(_vm.product, "active", $$c)
-                            }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("b", [
-                        _vm._v(
-                          _vm._s(_vm.product.active == 1 ? "Ativo" : "Inativo")
-                        )
-                      ])
-                    ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group text-center" }, [
@@ -1221,6 +1285,14 @@ var render = function() {
                               )
                             ]),
                             _vm._v(" "),
+                            _c("td", { staticClass: "align-middle" }, [
+                              _vm._v(
+                                "\n                                " +
+                                  _vm._s(product.category.name) +
+                                  "\n                            "
+                              )
+                            ]),
+                            _vm._v(" "),
                             _c(
                               "td",
                               { staticClass: "align-middle text-center" },
@@ -1352,6 +1424,8 @@ var staticRenderFns = [
         _c("th", [_vm._v("Valor")]),
         _vm._v(" "),
         _c("th", [_vm._v("Descrição")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Categoria")]),
         _vm._v(" "),
         _c("th", { staticClass: "text-center" }, [_vm._v("Foto")]),
         _vm._v(" "),

@@ -140,6 +140,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 
 
@@ -147,13 +150,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var URL = _config_api__WEBPACK_IMPORTED_MODULE_0__.URI_BASE_API;
 var RESOURCE = "products";
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  created: function created() {
+    this.getCategories();
+  },
   data: function data() {
     return {
       product: {
         name: "",
         price: "",
         image: "",
-        description: ""
+        description: "",
+        category_id: ""
       },
       money: {
         decimal: ",",
@@ -161,6 +168,7 @@ var RESOURCE = "products";
         precision: 2,
         masked: false
       },
+      categories: [],
       error: {},
       errors: []
     };
@@ -175,9 +183,6 @@ var RESOURCE = "products";
         minLength: (0,vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_2__.minLength)(5)
       },
       price: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_2__.required
-      },
-      image: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_2__.required
       }
     }
@@ -194,17 +199,22 @@ var RESOURCE = "products";
       var formData = new FormData();
       formData.append("name", this.product.name);
       formData.append("price", this.product.price);
+      formData.append("category_id", this.product.category_id);
+      formData.append("description", this.product.description);
 
       if (this.product.image) {
         formData.append("image", this.product.image);
       }
 
-      formData.append("description", this.product.description);
       this.createProduct(formData).then(function (response) {
+        console.log(response);
+
         if (response.status == 201) {
           _this.getProducts();
 
           _this.$refs.form.reset();
+
+          $("#categories").val("").trigger("change");
 
           _this.$root.$emit("product", response);
 
@@ -228,6 +238,18 @@ var RESOURCE = "products";
             position: "bottom"
           });
         }
+      });
+    },
+    getCategories: function getCategories() {
+      var _this2 = this;
+
+      axios.get("".concat(URL, "/").concat(_config_api__WEBPACK_IMPORTED_MODULE_0__.RESOURCES.CATEGORIES, "/getCategories"), {
+        headers: {
+          Authorization: "Bearer " + _config_api__WEBPACK_IMPORTED_MODULE_0__.TOKEN
+        }
+      }).then(function (response) {
+        console.log(response.data);
+        _this2.categories = response.data;
       });
     }
   })
@@ -374,173 +396,183 @@ var render = function() {
             }
           },
           [
-            _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "name" } }, [_vm._v("Nome")]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model.trim",
-                    value: _vm.$v.product.name.$model,
-                    expression: "$v.product.name.$model",
-                    modifiers: { trim: true }
-                  }
-                ],
-                staticClass: "form-control text-capitalize col-sm-6",
-                class: {
-                  "is-invalid": _vm.$v.product.name.$error
-                },
-                attrs: { type: "text", name: "name", required: "" },
-                domProps: { value: _vm.$v.product.name.$model },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+            _c("div", { staticClass: "form-row" }, [
+              _c("div", { staticClass: "form-group col-sm-6" }, [
+                _c("label", { attrs: { for: "name" } }, [_vm._v("Nome")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model.trim",
+                      value: _vm.$v.product.name.$model,
+                      expression: "$v.product.name.$model",
+                      modifiers: { trim: true }
                     }
-                    _vm.$set(
-                      _vm.$v.product.name,
-                      "$model",
-                      $event.target.value.trim()
-                    )
+                  ],
+                  staticClass: "form-control text-capitalize",
+                  class: {
+                    "is-invalid": _vm.$v.product.name.$error
                   },
-                  blur: function($event) {
-                    return _vm.$forceUpdate()
+                  attrs: { type: "text", name: "name", required: "" },
+                  domProps: { value: _vm.$v.product.name.$model },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.$v.product.name,
+                        "$model",
+                        $event.target.value.trim()
+                      )
+                    },
+                    blur: function($event) {
+                      return _vm.$forceUpdate()
+                    }
                   }
-                }
-              }),
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.$v.product.name.$error,
+                        expression: "$v.product.name.$error"
+                      }
+                    ]
+                  },
+                  [
+                    _vm.errors.name
+                      ? _c("small", { class: ["text-danger"] }, [
+                          _vm._v(_vm._s(_vm.errors.name[0]))
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    !_vm.$v.product.name.minLength
+                      ? _c("small", { class: ["text-danger"] }, [
+                          _vm._v(
+                            "\n                                O nome deve ter pelo menos\n                                " +
+                              _vm._s(
+                                _vm.$v.product.name.$params.minLength.min
+                              ) +
+                              "\n                                caracteres.\n                            "
+                          )
+                        ])
+                      : _vm._e()
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group col-sm-3" }, [
+                _c("label", { attrs: { for: "price" } }, [_vm._v("Valor")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model.trim",
+                      value: _vm.$v.product.price.$model,
+                      expression: "$v.product.price.$model",
+                      modifiers: { trim: true }
+                    },
+                    {
+                      name: "money",
+                      rawName: "v-money",
+                      value: _vm.money,
+                      expression: "money"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  class: {
+                    "is-invalid": _vm.$v.product.price.$error
+                  },
+                  attrs: { type: "text", name: "price", required: "" },
+                  domProps: { value: _vm.$v.product.price.$model },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.$v.product.price,
+                        "$model",
+                        $event.target.value.trim()
+                      )
+                    },
+                    blur: function($event) {
+                      return _vm.$forceUpdate()
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.$v.product.price.$error,
+                        expression: "$v.product.price.$error"
+                      }
+                    ]
+                  },
+                  [
+                    _vm.errors.price
+                      ? _c("small", { class: ["text-danger"] }, [
+                          _vm._v(_vm._s(_vm.errors.price[0]))
+                        ])
+                      : _vm._e()
+                  ]
+                )
+              ]),
               _vm._v(" "),
               _c(
                 "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.$v.product.name.$error,
-                      expression: "$v.product.name.$error"
-                    }
-                  ]
-                },
+                { staticClass: "form-group col-sm-3" },
                 [
-                  _vm.errors.name
-                    ? _c("small", { class: ["text-danger"] }, [
-                        _vm._v(_vm._s(_vm.errors.name[0]))
-                      ])
-                    : _vm._e(),
+                  _c("label", { attrs: { for: "categories" } }, [
+                    _vm._v("Categoria")
+                  ]),
                   _vm._v(" "),
-                  !_vm.$v.product.name.minLength
-                    ? _c("small", { class: ["text-danger"] }, [
-                        _vm._v(
-                          "\n                            O nome deve ter pelo menos\n                            " +
-                            _vm._s(_vm.$v.product.name.$params.minLength.min) +
-                            "\n                            caracteres.\n                        "
-                        )
-                      ])
-                    : _vm._e()
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "price" } }, [_vm._v("Valor")]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model.trim",
-                    value: _vm.$v.product.price.$model,
-                    expression: "$v.product.price.$model",
-                    modifiers: { trim: true }
-                  },
-                  {
-                    name: "money",
-                    rawName: "v-money",
-                    value: _vm.money,
-                    expression: "money"
-                  }
-                ],
-                staticClass: "form-control",
-                class: {
-                  "is-invalid": _vm.$v.product.price.$error
-                },
-                attrs: { type: "text", name: "price", required: "" },
-                domProps: { value: _vm.$v.product.price.$model },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.$v.product.price,
-                      "$model",
-                      $event.target.value.trim()
-                    )
-                  },
-                  blur: function($event) {
-                    return _vm.$forceUpdate()
-                  }
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  directives: [
+                  _c(
+                    "Select2",
                     {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.$v.product.price.$error,
-                      expression: "$v.product.price.$error"
-                    }
-                  ]
-                },
-                [
-                  _vm.errors.price
-                    ? _c("small", { class: ["text-danger"] }, [
-                        _vm._v(_vm._s(_vm.errors.price[0]))
+                      attrs: {
+                        options: _vm.categories,
+                        value: _vm.product.category_id,
+                        name: "category_id",
+                        id: "categories"
+                      },
+                      model: {
+                        value: _vm.product.category_id,
+                        callback: function($$v) {
+                          _vm.$set(_vm.product, "category_id", $$v)
+                        },
+                        expression: "product.category_id"
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "", disabled: "" } }, [
+                        _vm._v("Selecione")
                       ])
-                    : _vm._e()
-                ]
-              ),
-              _vm._v(
-                "\n                    " +
-                  _vm._s(_vm.product.price) +
-                  "\n                "
+                    ]
+                  )
+                ],
+                1
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "form-group" }, [
+            _c("div", { staticClass: "form-group mt-2" }, [
               _c("input", {
                 ref: "file",
-                class: {
-                  "is-invalid": _vm.$v.product.image.$error
-                },
                 attrs: { type: "file", name: "image" },
                 on: { change: _vm.onChange }
-              }),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  directives: [
-                    {
-                      name: "show",
-                      rawName: "v-show",
-                      value: _vm.$v.product.image.$error,
-                      expression: "$v.product.image.$error"
-                    }
-                  ]
-                },
-                [
-                  _vm.errors.image
-                    ? _c("small", { class: ["text-danger"] }, [
-                        _vm._v(_vm._s(_vm.errors.image[0]))
-                      ])
-                    : _vm._e()
-                ]
-              )
+              })
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [

@@ -25,8 +25,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $catergories = $this->repository->orderBy('name', 'asc')->paginate();
-        return response()->json($catergories);
+        $categories = $this->repository->with('products')->orderBy('name', 'asc')->paginate();
+        return response()->json($categories);
     }
 
 
@@ -97,4 +97,11 @@ class CategoryController extends Controller
 
         return response()->json($user);
     }
+
+    public function getCategoriesFromSelect2()
+    {
+        $category = Category::select('id', 'name as text')->get();
+        return response()->json($category);
+    }
+
 }

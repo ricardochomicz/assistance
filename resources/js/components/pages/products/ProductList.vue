@@ -45,6 +45,7 @@
                                 <th>Nome</th>
                                 <th>Valor</th>
                                 <th>Descrição</th>
+                                <th>Categoria</th>
                                 <th class="text-center">Foto</th>
                                 <th class="text-center">
                                     <i class="fas fa-cogs"></i>
@@ -69,6 +70,9 @@
                                 </td>
                                 <td class="align-middle">
                                     {{ product.description }}
+                                </td>
+                                 <td class="align-middle">
+                                    {{ product.category.name }}
                                 </td>
                                 <td class="align-middle text-center">
                                     <img

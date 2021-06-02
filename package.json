@@ -25,10 +25,12 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "@ttskch/select2-bootstrap4-theme": "^1.5.2",
         "admin-lte": "^3.1.0",
         "bootstrap-vue": "^2.21.2",
         "laravel-vue-pagination": "^2.3.1",
         "moment": "^2.29.1",
+        "select2": "^4.1.0-rc.0",
         "v-mask": "^2.2.4",
         "v-money": "^0.8.1",
         "v-select2-component": "^0.4.7",

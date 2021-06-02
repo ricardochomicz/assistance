@@ -9,11 +9,11 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'price', 'description', 'image', 'active'];
+    protected $fillable = ['name', 'slug', 'price', 'description', 'image', 'active', 'category_id'];
 
-    public function categories()
+    public function category()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function setNameAttribute($value)

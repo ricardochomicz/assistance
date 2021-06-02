@@ -343,6 +343,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -901,7 +915,7 @@ var render = function() {
                         ? _c("small", [
                             _c("b", [_vm._v(_vm._s(this.qty_filter.length))]),
                             _vm._v(
-                              " categoria(s)\n                            encontrada(s)"
+                              "\n                            categoria(s) encontrada(s)"
                             )
                           ])
                         : _vm._e()
@@ -929,7 +943,11 @@ var render = function() {
                             ),
                             _vm._v(" "),
                             _c("td", { staticClass: "align-middle" }, [
-                              _vm._v(_vm._s(category.name))
+                              _vm._v(
+                                "\n                                " +
+                                  _vm._s(category.name) +
+                                  "\n                            "
+                              )
                             ]),
                             _vm._v(" "),
                             _c("td", { staticClass: "align-middle" }, [
@@ -964,6 +982,30 @@ var render = function() {
                                     }
                                   },
                                   [_c("i", { staticClass: "fas fa-pen" })]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "router-link",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "b-tooltip",
+                                        rawName: "v-b-tooltip.hover",
+                                        value: "Produtos da Categoria",
+                                        expression:
+                                          "\n                                        'Produtos da Categoria'\n                                    ",
+                                        modifiers: { hover: true }
+                                      }
+                                    ],
+                                    staticClass: "btn btn-warning disabled",
+                                    attrs: {
+                                      to:
+                                        "/categories/" +
+                                        category.id +
+                                        "/products"
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fas fa-barcode" })]
                                 )
                               ],
                               1

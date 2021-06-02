@@ -14,15 +14,16 @@ import store from './store'
 import VueTheMask from 'vue-the-mask'
 import VueToast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-sugar.css';
-import Select2 from 'v-select2-component';
 import Vuelidate from 'vuelidate'
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 import VTooltip from 'v-tooltip'
+import ToggleButton from 'vue-js-toggle-button'
 import {
     BootstrapVue
 } from 'bootstrap-vue'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import moment from 'moment'
+import Select2 from 'v-select2-component';
 
 
 //Import v-from
@@ -36,7 +37,7 @@ Vue.use(VueToast)
 Vue.use(Vuelidate)
 Vue.use(VTooltip)
 Vue.use(BootstrapVue)
-
+Vue.use(ToggleButton)
 
 
 /**
@@ -51,7 +52,6 @@ Vue.use(BootstrapVue)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('app', require('./components/App.vue').default);
-Vue.component('Select2', Select2);
 Vue.component('vue-bootstrap-typeahead', VueBootstrapTypeahead)
 Vue.component('pagination', require('laravel-vue-pagination'));
 Vue.component('login', require('./components/auth/Login.vue'))
@@ -59,6 +59,8 @@ Vue.component('register', require('./components/auth/Register.vue'))
 Vue.component('adminlte', require('./components/bootstrap/Adminlte.vue').default)
 Vue.component('preloader', require('./components/Preloader.vue').default)
 Vue.component('preloader-card', require('./components/PreloaderCard.vue').default)
+Vue.component('Select2', Select2);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -87,7 +89,7 @@ Vue.filter('formatPrice', function (value) {
 const app = new Vue({
     el: '#app',
     router,
-    store
+    store,
 });
 
 // this part is not necessary, you may adapt as required

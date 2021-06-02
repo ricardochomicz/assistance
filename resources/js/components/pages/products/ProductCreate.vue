@@ -20,74 +20,77 @@
                     class="needs-validation"
                     novalidate
                 >
-                    <div class="form-group">
-                        <label for="name">Nome</label>
-                        <input
-                            type="text"
-                            class="form-control text-capitalize col-sm-6"
-                            v-model.trim="$v.product.name.$model"
-                            :class="{
-                                'is-invalid': $v.product.name.$error
-                            }"
-                            name="name"
-                            required
-                        />
-                        <div v-show="$v.product.name.$error">
-                            <small
-                                v-if="errors.name"
-                                :class="['text-danger']"
-                                >{{ errors.name[0] }}</small
-                            >
-                            <small
-                                v-if="!$v.product.name.minLength"
-                                :class="['text-danger']"
-                            >
-                                O nome deve ter pelo menos
-                                {{ $v.product.name.$params.minLength.min }}
-                                caracteres.
-                            </small>
+                    <div class="form-row">
+                        <div class="form-group col-sm-6">
+                            <label for="name">Nome</label>
+                            <input
+                                type="text"
+                                class="form-control text-capitalize"
+                                v-model.trim="$v.product.name.$model"
+                                :class="{
+                                    'is-invalid': $v.product.name.$error
+                                }"
+                                name="name"
+                                required
+                            />
+                            <div v-show="$v.product.name.$error">
+                                <small
+                                    v-if="errors.name"
+                                    :class="['text-danger']"
+                                    >{{ errors.name[0] }}</small
+                                >
+                                <small
+                                    v-if="!$v.product.name.minLength"
+                                    :class="['text-danger']"
+                                >
+                                    O nome deve ter pelo menos
+                                    {{ $v.product.name.$params.minLength.min }}
+                                    caracteres.
+                                </small>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="price">Valor</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            v-model.trim="$v.product.price.$model"
-                            :class="{
-                                'is-invalid': $v.product.price.$error
-                            }"
-                            name="price"
-                            required
-                            v-money="money"
-                        />
-                        <div v-show="$v.product.price.$error">
-                            <small
-                                v-if="errors.price"
-                                :class="['text-danger']"
-                                >{{ errors.price[0] }}</small
-                            >
+                        <div class="form-group col-sm-3">
+                            <label for="price">Valor</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                v-model.trim="$v.product.price.$model"
+                                :class="{
+                                    'is-invalid': $v.product.price.$error
+                                }"
+                                name="price"
+                                required
+                                v-money="money"
+                            />
+                            <div v-show="$v.product.price.$error">
+                                <small
+                                    v-if="errors.price"
+                                    :class="['text-danger']"
+                                    >{{ errors.price[0] }}</small
+                                >
+                            </div>
                         </div>
-                        {{ product.price }}
+                        <div class="form-group col-sm-3">
+                            <label for="categories">Categoria</label>
+                            <Select2
+                                :options="categories"
+                                :value="product.category_id"
+                                v-model="product.category_id"
+                                name="category_id"
+                                id="categories"
+                            >
+                                <option value="" disabled>Selecione</option>
+                            </Select2>
+                        </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                         <input
                             type="file"
                             name="image"
                             ref="file"
-                            :class="{
-                                'is-invalid': $v.product.image.$error
-                            }"
                             v-on:change="onChange"
                         />
-                        <div v-show="$v.product.image.$error">
-                            <small
-                                v-if="errors.image"
-                                :class="['text-danger']"
-                                >{{ errors.image[0] }}</small
-                            >
-                        </div>
                     </div>
 
                     <div class="form-group">
@@ -119,18 +122,23 @@
 <script>
 import { mapActions } from "vuex";
 import { required, minLength } from "vuelidate/lib/validators";
-import { URI_BASE_API, TOKEN } from "../../../config/api";
+import { URI_BASE_API, RESOURCES, TOKEN } from "../../../config/api";
 import { Money } from "v-money";
+
 const URL = URI_BASE_API;
 const RESOURCE = "products";
 export default {
+    created() {
+        this.getCategories();
+    },
     data() {
         return {
             product: {
                 name: "",
                 price: "",
                 image: "",
-                description: ""
+                description: "",
+                category_id: ""
             },
             money: {
                 decimal: ",",
@@ -138,6 +146,7 @@ export default {
                 precision: 2,
                 masked: false
             },
+            categories: [],
             error: {},
             errors: []
         };
@@ -153,9 +162,6 @@ export default {
             },
             price: {
                 required
-            },
-            image: {
-                required
             }
         }
     },
@@ -170,15 +176,20 @@ export default {
             let formData = new FormData();
             formData.append("name", this.product.name);
             formData.append("price", this.product.price);
+            formData.append("category_id", this.product.category_id);
+            formData.append("description", this.product.description);
             if (this.product.image) {
                 formData.append("image", this.product.image);
             }
-            formData.append("description", this.product.description);
             this.createProduct(formData)
                 .then(response => {
+                    console.log(response)
                     if (response.status == 201) {
                         this.getProducts();
                         this.$refs.form.reset();
+                        $("#categories")
+                            .val("")
+                            .trigger("change");
                         this.$root.$emit("product", response);
                         this.$toast.open({
                             message: "Produto cadastrado com sucesso!",
@@ -199,6 +210,16 @@ export default {
                             position: "bottom"
                         });
                     }
+                });
+        },
+        getCategories() {
+            axios
+                .get(`${URL}/${RESOURCES.CATEGORIES}/getCategories`, {
+                    headers: { Authorization: "Bearer " + TOKEN }
+                })
+                .then(response => {
+                    console.log(response.data);
+                    this.categories = response.data;
                 });
         }
     }

@@ -35,8 +35,8 @@
                     <table class="table table-hover table-borderless">
                         <caption>
                             <small v-if="search !== ''"
-                                ><b>{{ this.qty_filter.length }}</b> categoria(s)
-                                encontrada(s)</small
+                                ><b>{{ this.qty_filter.length }}</b>
+                                categoria(s) encontrada(s)</small
                             >
                         </caption>
                         <thead>
@@ -58,7 +58,9 @@
                                 <td class="text-center align-middle">
                                     {{ category.id }}
                                 </td>
-                                <td class="align-middle">{{ category.name }}</td>
+                                <td class="align-middle">
+                                    {{ category.name }}
+                                </td>
                                 <td class="align-middle">
                                     {{ category.description }}
                                 </td>
@@ -70,6 +72,18 @@
                                     >
                                         <i class="fas fa-pen"></i>
                                     </b-button>
+                                    <router-link
+                                        v-bind:to="
+                                            '/categories/' +
+                                                category.id +
+                                                '/products'
+                                        "
+                                        class="btn btn-warning disabled"
+                                        v-b-tooltip.hover="
+                                            'Produtos da Categoria'
+                                        "
+                                        ><i class="fas fa-barcode"></i
+                                    ></router-link>
                                 </td>
                             </tr>
                         </tbody>
@@ -97,7 +111,7 @@
 import { mapActions, mapState, mapMutations } from "vuex";
 import { URI_BASE_API, RESOURCES, TOKEN } from "../../../config/api";
 import _ from "lodash";
-import modal from './CategoryEdit'
+import modal from "./CategoryEdit";
 const URL = URI_BASE_API;
 
 export default {
@@ -135,11 +149,15 @@ export default {
         searchUnit: _.debounce(function() {
             if (this.search != "") {
                 axios
-                    .get(`${URL}/${RESOURCES.CATEGORIES}/search?q=` + this.search, {
-                        headers: {
-                            Authorization: "Bearer " + TOKEN
+                    .get(
+                        `${URL}/${RESOURCES.CATEGORIES}/search?q=` +
+                            this.search,
+                        {
+                            headers: {
+                                Authorization: "Bearer " + TOKEN
+                            }
                         }
-                    })
+                    )
                     .then(response => {
                         this.categories.data = response.data;
                         this.qty_filter = response.data;

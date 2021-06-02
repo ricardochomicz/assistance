@@ -117,6 +117,11 @@ const routes = [{
         name: 'categories-create'
     },
     {
+        path: '/categories/:id/products',
+        component: () => import('../components/pages/categories/CategoryProducts'),
+        name: 'categories-product'
+    },
+    {
         path: '/products',
         component: () => import('../components/pages/products/ProductList'),
         name: 'products'
